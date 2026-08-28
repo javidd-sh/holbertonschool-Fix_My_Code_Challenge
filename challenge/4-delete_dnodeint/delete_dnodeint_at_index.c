@@ -2,48 +2,50 @@
 #include <stdlib.h>
 
 /**
- * delete_dnodeint_at_index - Deletes the node at index of a dlistint_t list
- * @head: Pointer to the pointer of the first node
- * @index: Index of the node to delete (starts at 0)
+ * delete_dnodeint_at_index - Delete a node at a specific index from a list
+ * @head: A pointer to the first element of a list
+ * @index: The index of the node to delete
  *
- * Return: 1 if succeeded, -1 if failed
+ * Return: 1 on success, -1 on failure
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-	dlistint_t *temp = *head;
-	unsigned int i = 0;
+	dlistint_t *saved_head;
+	unsigned int p;
 
 	if (head == NULL || *head == NULL)
 		return (-1);
 
-	/* Case 1: Deleting the head node (index 0) */
+	saved_head = *head;
+
+	/* Case 1: Delete head node (index 0) */
 	if (index == 0)
 	{
-		*head = temp->next;
+		*head = saved_head->next;
 		if (*head != NULL)
 			(*head)->prev = NULL;
-		free(temp);
+		free(saved_head);
 		return (1);
 	}
 
-	/* Traverse to the node at the specified index */
-	while (temp != NULL && i < index)
+	/* Traverse to node at target index */
+	p = 0;
+	while (p < index && saved_head != NULL)
 	{
-		temp = temp->next;
-		i++;
+		saved_head = saved_head->next;
+		p++;
 	}
 
 	/* Index out of bounds */
-	if (temp == NULL)
+	if (saved_head == NULL)
 		return (-1);
 
-	/* Case 2: Deleting a middle or last node */
-	if (temp->next != NULL)
-		temp->next->prev = temp->prev;
+	/* Case 2: Delete middle or last node */
+	saved_head->prev->next = saved_head->next;
 
-	if (temp->prev != NULL)
-		temp->prev->next = temp->next;
+	if (saved_head->next != NULL)
+		saved_head->next->prev = saved_head->prev;
 
-	free(temp);
+	free(saved_head);
 	return (1);
 }
