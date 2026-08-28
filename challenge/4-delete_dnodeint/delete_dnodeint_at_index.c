@@ -1,39 +1,49 @@
-#include <string.h>
-#include <stdlib.h>
 #include "lists.h"
+#include <stdlib.h>
 
 /**
- * add_dnodeint_end - Add a node at the end of a list
+ * delete_dnodeint_at_index - Deletes the node at index of a dlistint_t list
+ * @head: Pointer to the pointer of the first node
+ * @index: Index of the node to delete (starts at 0)
  *
- * @head: The address of the pointer to the first element of the list
- * @n: The number to store in the new element
- *
- * Return: A pointer to the new element
+ * Return: 1 if succeeded, -1 if failed
  */
-dlistint_t *add_dnodeint_end(dlistint_t **head, const int n)
+int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-	dlistint_t *new;
-	dlistint_t *l;
+	dlistint_t *temp = *head;
+	unsigned int i = 0;
 
-	new = malloc(sizeof(dlistint_t));
-	if (new == NULL)
+	if (head == NULL || *head == NULL)
+		return (-1);
+
+	/* Case 1: Deleting the head node (index 0) */
+	if (index == 0)
 	{
-		return (NULL);
+		*head = temp->next;
+		if (*head != NULL)
+			(*head)->prev = NULL;
+		free(temp);
+		return (1);
 	}
-	new->n = n;
-	new->next = NULL;
-	if (*head == NULL)
+
+	/* Traverse to the node at the specified index */
+	while (temp != NULL && i < index)
 	{
-		*head = new;
-		new->prev = NULL;
-		return (new);
+		temp = temp->next;
+		i++;
 	}
-	l = *head;
-	while (l->next != NULL)
-	{
-		l = l->next;
-	}
-	l->next = new;
-	new->prev = l;
-	return (new);
+
+	/* Index out of bounds */
+	if (temp == NULL)
+		return (-1);
+
+	/* Case 2: Deleting a middle or last node */
+	if (temp->next != NULL)
+		temp->next->prev = temp->prev;
+
+	if (temp->prev != NULL)
+		temp->prev->next = temp->next;
+
+	free(temp);
+	return (1);
 }
